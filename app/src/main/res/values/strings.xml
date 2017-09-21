@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">StickyBehavior</string>
+    <string name="StickyBehavior">com.lenovohit.stickybehavior.StickyBehavior</string>
+    <string name="HeaderBehavior">com.lenovohit.stickybehavior.HeaderBehavior</string>
+    <string name="BottomBehavior">com.lenovohit.stickybehavior.BottomBehavior</string>
+</resources>
