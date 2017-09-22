@@ -5,6 +5,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Scroller;
 
 /**
  * 中间停靠的栏目
@@ -58,6 +59,23 @@ public class StickyBehavior extends CoordinatorLayout.Behavior<View>{
     @Override
     public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, View child, View target) {
         //如果需要回弹则需要在这里写代码
+        if(Math.abs(child.getTop()) < maxOffset/4){
+            scrollTo(coordinatorLayout, child, minOffset, 1000);
+        }
+    }
+
+    private void scrollTo(final CoordinatorLayout parent, final View child, final int y, int duration){
+        final Scroller scroller = new Scroller(parent.getContext());
+        scroller.startScroll(0,child.getTop(),0,minOffset,duration);
+        ViewCompat.postOnAnimation(child, new Runnable() {
+            @Override
+            public void run() {
+                if (scroller.computeScrollOffset()) {
+                    child.offsetTopAndBottom(-scroller.getCurrY());
+                    parent.dispatchDependentViewsChanged(child);
+                }
+            }
+        });
     }
 
     private View getHeaderView(CoordinatorLayout coordinatorLayout){
