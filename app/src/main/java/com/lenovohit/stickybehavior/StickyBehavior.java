@@ -66,7 +66,7 @@ public class StickyBehavior extends CoordinatorLayout.Behavior<View>{
 
     private void scrollTo(final CoordinatorLayout parent, final View child, final int y, int duration){
         final Scroller scroller = new Scroller(parent.getContext());
-        scroller.startScroll(0,child.getTop(),0,minOffset,duration);
+        scroller.startScroll(0,child.getTop(),0,y,duration);
         ViewCompat.postOnAnimation(child, new Runnable() {
             @Override
             public void run() {
