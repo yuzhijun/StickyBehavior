@@ -16,6 +16,8 @@ public class StickyBehavior extends CoordinatorLayout.Behavior<View>{
     int maxOffset = 0;
     //最小的偏移
     int minOffset = 0;
+    //是否滚动到顶部
+    private boolean customScrollToTop = false;
 
     public StickyBehavior() {
         super();
@@ -44,6 +46,11 @@ public class StickyBehavior extends CoordinatorLayout.Behavior<View>{
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child, View target, int dx, int dy, int[] consumed) {
         int top = child.getTop();
         if (top >= minOffset){
+            if (dy > 0){//往上移动
+                customScrollToTop = true;
+            }else{
+                customScrollToTop = false;
+            }
             consumed[1] = scroll(child, dy, minOffset, maxOffset);
         }
     }
@@ -59,20 +66,23 @@ public class StickyBehavior extends CoordinatorLayout.Behavior<View>{
     @Override
     public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, View child, View target) {
         //如果需要回弹则需要在这里写代码
-        if(Math.abs(child.getTop()) < maxOffset/4){
+        if(Math.abs(child.getTop()) < maxOffset/4 && customScrollToTop){
             scrollTo(coordinatorLayout, child, minOffset, 1000);
         }
     }
 
     private void scrollTo(final CoordinatorLayout parent, final View child, final int y, int duration){
+        customScrollToTop = false;
         final Scroller scroller = new Scroller(parent.getContext());
-        scroller.startScroll(0,child.getTop(),0,y,duration);
+        scroller.startScroll(0,child.getTop(),0,y - child.getTop(),duration);
         ViewCompat.postOnAnimation(child, new Runnable() {
             @Override
             public void run() {
                 if (scroller.computeScrollOffset()) {
-                    child.offsetTopAndBottom(-scroller.getCurrY());
+                    int delta = scroller.getCurrY() - child.getTop();
+                    child.offsetTopAndBottom(delta);
                     parent.dispatchDependentViewsChanged(child);
+                    ViewCompat.postOnAnimation(child, this);
                 }
             }
         });
